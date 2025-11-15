@@ -320,7 +320,7 @@ export default function App() {
                 </section>
                 <section className="referral-section">
                     <p className="ref-text icon-line">
-                        <img src="/src/assets/mushroom.png" alt="mushroom" className="mushroom-icon" />
+                        <img src="./assets/mushroom.png" alt="mushroom" className="mushroom-icon" />
                         Developed with love <span className="heart">❤️</span> by
                         <a
                             href="https://x.com/ocebotSend"
