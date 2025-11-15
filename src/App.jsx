@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
+import mushroomIcon from "./assets/mushroom.png";
+
 
 // SEND on Base
 const SEND_PRICE_API =
@@ -320,16 +322,17 @@ export default function App() {
                 </section>
                 <section className="referral-section">
                     <p className="ref-text icon-line">
-                        <img src="./assets/mushroom.png" alt="mushroom" className="mushroom-icon" />
-                        Developed with love <span className="heart">❤️</span> by
-                        <a
-                            href="https://x.com/ocebotSend"
-                            target="_blank"
-                            className="ref-link"
-                        >
-                            &nbsp;/ocebot
-                        </a>
-                    </p>
+    <img src={mushroomIcon} alt="mushroom" className="mushroom-icon" />
+    Developed with love <span className="heart">❤️</span> by
+    <a
+      href="https://x.com/ocebotSend"
+      target="_blank"
+      rel="noreferrer"
+      className="ref-link"
+    >
+      &nbsp;/ocebot
+    </a>
+  </p>
 
                     <p className="ref-text icon-line">
                         If you want to join SEND, please consider using my referral:{" "}
