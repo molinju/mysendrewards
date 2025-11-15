@@ -343,7 +343,14 @@ export default function App() {
                     </p>
 
                     <p className="ref-text funny-text icon-line">
-                        Buy me a coffee <span className="coffee">☕</span> if this helped you!
+                        Buy me a
+                        <a
+                            href="https://send.app/ocebot"
+                            target="_blank"
+                        className="ref-link"
+                        >
+                        coffee </a> <span className="coffee">☕</span> if this helped you!
+
                     </p>
                 </section>
 
