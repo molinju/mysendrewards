@@ -14,16 +14,29 @@ const CANTON_PRICE_API =
 export default function App() {
     const [cantonAmount, setCantonAmount] = useState("");
     const [frequencyMinutes, setFrequencyMinutes] = useState("11");
-
     const [sendHoldings, setSendHoldings] = useState(""); // NEW: SEND holdings
+
+
 
     const [sendPrice, setSendPrice] = useState(null); // USD
     const [cantonPrice, setCantonPrice] = useState(null); // USD
+
+    const [priceMode, setPriceMode] = useState("realtime");
+
 
     const [loadingPrices, setLoadingPrices] = useState(false);
     const [priceError, setPriceError] = useState(null);
 
     const [results, setResults] = useState(null);
+    const getEffectiveCantonPrice = (mode) => {
+        if (mode === "conservative") return 0.25;
+        if (mode === "moderate") return 0.5;
+        if (mode === "bullish") return 1;
+        // realtime → precio real desde API
+        return cantonPrice;
+    };
+
+
 
     // Load live prices on mount
     useEffect(() => {
@@ -87,9 +100,11 @@ export default function App() {
             maximumFractionDigits: 2,
         });
 
-    const handleCalculate = (e) => {
-        e.preventDefault();
+    const effectiveCantonPrice = getEffectiveCantonPrice(priceMode);
 
+
+
+    const recalcResults = (overrideMode) => {
         const amount = parseFloat(cantonAmount);
         const freq = parseFloat(frequencyMinutes);
 
@@ -98,12 +113,15 @@ export default function App() {
             return;
         }
 
-        // CC per minute
+        const mode = overrideMode || priceMode;
+        const effectiveCantonPrice = getEffectiveCantonPrice(mode);
+
+        // CC por minuto
         const perMinute = amount / freq;
         const perHour = perMinute * 60;
         const perDay = perHour * 24;
-        const perMonth = perDay * 30; // 30-day month
-        const perYear = perDay * 365; // 365-day year
+        const perMonth = perDay * 30; // mes de 30 días
+        const perYear = perDay * 365; // año de 365 días
 
         const data = {
             perHour,
@@ -112,15 +130,19 @@ export default function App() {
             perYear,
         };
 
-        // If we have a valid Canton price, also compute USD outputs
-        if (cantonPrice != null && !isNaN(cantonPrice) && cantonPrice > 0) {
-            data.usdPerHour = perHour * cantonPrice;
-            data.usdPerDay = perDay * cantonPrice;
-            data.usdPerMonth = perMonth * cantonPrice;
-            data.usdPerYear = perYear * cantonPrice;
+        // CC → USD según el precio efectivo de Canton
+        if (
+            effectiveCantonPrice != null &&
+            !isNaN(effectiveCantonPrice) &&
+            effectiveCantonPrice > 0
+        ) {
+            data.usdPerHour = perHour * effectiveCantonPrice;
+            data.usdPerDay = perDay * effectiveCantonPrice;
+            data.usdPerMonth = perMonth * effectiveCantonPrice;
+            data.usdPerYear = perYear * effectiveCantonPrice;
         }
 
-        // APR calculation in USD
+        // APR (si tenemos SEND holdings y precio de SEND)
         const sendHold = parseFloat(sendHoldings);
         if (
             sendHold &&
@@ -141,6 +163,12 @@ export default function App() {
 
         setResults(data);
     };
+
+    const handleCalculate = (e) => {
+        e.preventDefault();
+        recalcResults(); // usa el modo actual
+    };
+
 
     return (
         <div className="app-root">
@@ -169,11 +197,18 @@ export default function App() {
                         <div className="price-pill">
                             <span className="pill-label">CC PRICE</span>
                             <span className="pill-value">
-                {loadingPrices && cantonPrice == null && "Loading..."}
-                                {!loadingPrices && cantonPrice == null && "--"}
-                                {cantonPrice != null && formatUsd(cantonPrice)}
-              </span>
+    {effectiveCantonPrice != null && !isNaN(effectiveCantonPrice)
+        ? formatUsd(effectiveCantonPrice)
+        : (loadingPrices ? "Loading..." : "--")}
+  </span>
+                            <span className="pill-mode-label">
+    {priceMode === "realtime" && "Mode: Real time"}
+                                {priceMode === "conservative" && "Mode: Conservative ($0.25)"}
+                                {priceMode === "moderate" && "Mode: Moderate ($0.50)"}
+                                {priceMode === "bullish" && "Mode: Bullish ($1.00)"}
+  </span>
                         </div>
+
                     </div>
 
                     {priceError && (
@@ -182,6 +217,54 @@ export default function App() {
                         </p>
                     )}
                 </section>
+
+                <div className="mode-toggle">
+                    <button
+                        type="button"
+                        className={`mode-button ${priceMode === "realtime" ? "active" : ""}`}
+                        onClick={() => {
+                            setPriceMode("realtime");
+                            recalcResults("realtime");
+                        }}
+                    >
+                        Real time
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`mode-button ${priceMode === "conservative" ? "active" : ""}`}
+                        onClick={() => {
+                            setPriceMode("conservative");
+                            recalcResults("conservative");
+                        }}
+                    >
+                        Conservative ($0.25)
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`mode-button ${priceMode === "moderate" ? "active" : ""}`}
+                        onClick={() => {
+                            setPriceMode("moderate");
+                            recalcResults("moderate");
+                        }}
+                    >
+                        Moderate ($0.50)
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`mode-button ${priceMode === "bullish" ? "active" : ""}`}
+                        onClick={() => {
+                            setPriceMode("bullish");
+                            recalcResults("bullish");
+                        }}
+                    >
+                        Bullish ($1.00)
+                    </button>
+                </div>
+
+
 
                 {/* Form section */}
                 <form className="form" onSubmit={handleCalculate}>

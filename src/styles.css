@@ -370,3 +370,39 @@ body {
     color: var(--mint);
     opacity: 0.9;
 }
+
+.mode-toggle {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.mode-button {
+    border-radius: 999px;
+    border: 1px solid rgba(134, 174, 128, 0.7);
+    background: rgba(6, 16, 10, 0.85);
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    color: var(--mint);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mode-button:hover {
+    box-shadow: 0 0 10px rgba(64, 251, 80, 0.4);
+}
+
+.mode-button.active {
+    background: linear-gradient(135deg, var(--neon-green), #89ff9a);
+    color: #041106;
+    box-shadow: 0 8px 20px rgba(64, 251, 80, 0.4);
+    border-color: transparent;
+}
+
+.pill-mode-label {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: var(--grey);
+}
