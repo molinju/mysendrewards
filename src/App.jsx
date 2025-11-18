@@ -13,7 +13,7 @@ const CANTON_PRICE_API =
 
 export default function App() {
     const [cantonAmount, setCantonAmount] = useState("");
-    const [frequencyMinutes, setFrequencyMinutes] = useState("11");
+    const [frequencyMinutes, setFrequencyMinutes] = useState("7.5");
     const [sendHoldings, setSendHoldings] = useState(""); // NEW: SEND holdings
 
 
@@ -291,16 +291,17 @@ export default function App() {
                         <input
                             id="frequencyMinutes"
                             type="number"
-                            step="1"
-                            min="1"
+                            step="0.1"       // permite decimales
+                            min="0.1"        // mínimo razonable
                             className="input"
-                            placeholder="e.g. 11"
+                            placeholder="e.g. 7.5"
                             value={frequencyMinutes}
                             onChange={(e) => setFrequencyMinutes(e.target.value)}
                         />
+
                         <p className="help-text">
-                            Example: if you receive rewards every 15 minutes, enter{" "}
-                            <strong>15</strong>.
+                            Example: if you receive rewards every 7.5 minutes, enter{" "}
+                            <strong>7.5</strong>.
                         </p>
                     </div>
 
